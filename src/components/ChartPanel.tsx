@@ -7,9 +7,11 @@ interface ChartPanelProps {
     chartData: EarthquakeData[];
     setSelectedData: (itemId: string | null) => void;
     selectedData: string | null;
+    xAxis: keyof EarthquakeData;
+    yAxis: keyof EarthquakeData;
 }
 
-function ChartPanel({chartData,  setSelectedData}: ChartPanelProps) {
+function ChartPanel({chartData,  setSelectedData,xAxis, yAxis}: ChartPanelProps) {
 
     const selectedData = useDataStore((state) => state.selectedItem);
     
@@ -34,8 +36,8 @@ function ChartPanel({chartData,  setSelectedData}: ChartPanelProps) {
                     left: 10
                 }}
                 >
-                <XAxis dataKey="longitude" type="number" name="Longitude" />
-                <YAxis dataKey="latitude" type="number" name="Latitude" />
+                <XAxis dataKey={xAxis} type="number" name={xAxis} />
+                <YAxis dataKey={yAxis} type="number" name={yAxis} />
                 <Scatter name="Earthquake" data={chartData} fill="red" onClick={handleDataPointClick} onMouseEnter={handleDataPointClick} onMouseLeave={ () => setSelectedData(null) }
                     shape={ (props:any) => {
                         const { cx, cy, payload } = props;
