@@ -4,7 +4,9 @@ import { LoadingScreen } from "../components/LoadingScreen";
 import { useCsvData } from "../hooks/useFetchData";
 import useDataStore from "../store/datastore";
 import Dropdown from "../components/DropDown";
-import { useState } from "react";
+import { useState, useCallback } from "react";
+import debounce from 'lodash-es/debounce';
+import type { EarthquakeData } from "../store/datastore";
 
 const NUMERIC_COLUMNS = [
   { label: "Magnitude", value: "mag" },
@@ -22,8 +24,18 @@ function Homepage() {
     const selectedItem = useDataStore((state) => state.selectedItem);
     const setSelectedItem = useDataStore((state) => state.setSelectedItem);
 
-    const [xAxis, setXAxis] = useState("longitude");
-  const [yAxis, setYAxis] = useState("latitude");
+    const [xAxis, setXAxis] = useState<keyof EarthquakeData>("longitude");
+    const [yAxis, setYAxis] = useState<keyof EarthquakeData>("latitude");
+
+    const debouncedSetXAxis = useCallback(
+        debounce((value: keyof EarthquakeData) => setXAxis(value), 300),
+        []
+    );
+
+    const debouncedSetYAxis = useCallback(
+        debounce((value: keyof EarthquakeData) => setYAxis(value), 300),
+        []
+    );
 
     if (isLoading) return <LoadingScreen />;
     if (error) return <div>Error loading data</div>;
@@ -35,14 +47,14 @@ function Homepage() {
         <Dropdown
           label="X Axis"
           options={NUMERIC_COLUMNS.map(col => col.value)}
-          value={xAxis}
-          onChange={setXAxis}
+          value={xAxis as string}
+          onChange={(value) => debouncedSetXAxis(value as keyof EarthquakeData)}
         />
         <Dropdown
           label="Y Axis"
           options={NUMERIC_COLUMNS.map(col => col.value)}
-          value={yAxis}
-          onChange={setYAxis}
+          value={yAxis as string}
+          onChange={(value) => debouncedSetYAxis(value as keyof EarthquakeData)}
         />
       </div>
                 <ChartPanel chartData={data} setSelectedData={setSelectedItem} selectedData={selectedItem} xAxis={xAxis} yAxis={yAxis}/>
