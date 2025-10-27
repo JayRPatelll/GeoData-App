@@ -1,6 +1,6 @@
-import {  Scatter, ScatterChart, Tooltip, XAxis, YAxis } from "recharts";
+import { Scatter, ScatterChart, Tooltip, XAxis, YAxis } from "recharts";
 import type { EarthquakeData } from "../store/datastore";
-import {  useEffect } from "react";
+import { useMemo } from "react";
 import useDataStore from "../store/datastore";
 
 interface ChartPanelProps {
@@ -11,18 +11,22 @@ interface ChartPanelProps {
     yAxis: keyof EarthquakeData;
 }
 
-function ChartPanel({chartData,  setSelectedData,xAxis, yAxis}: ChartPanelProps) {
-
+function ChartPanel({chartData, setSelectedData, xAxis, yAxis}: ChartPanelProps) {
     const selectedData = useDataStore((state) => state.selectedItem);
+    
+    // Memoize chart data to prevent unnecessary re-renders
+    const memoizedChartData = useMemo(() => {
+        return chartData.map(item => ({
+            id: item.id,
+            [xAxis]: item[xAxis],
+            [yAxis]: item[yAxis]
+        }));
+    }, [chartData, xAxis, yAxis]);
     
     const handleDataPointClick = (data: any, _:any) => {
         if (!data) return;
         setSelectedData(data.id);
-    }
-
-    useEffect(() => {
-        console.log("Selected data point ID changed to:", selectedData);
-    }, [selectedData]);
+    };
 
     return (
         <div className="shadow p-2 h-96 w-full">
@@ -38,7 +42,7 @@ function ChartPanel({chartData,  setSelectedData,xAxis, yAxis}: ChartPanelProps)
                 >
                 <XAxis dataKey={xAxis} type="number" name={xAxis} />
                 <YAxis dataKey={yAxis} type="number" name={yAxis} />
-                <Scatter name="Earthquake" data={chartData} fill="red" onClick={handleDataPointClick} onMouseEnter={handleDataPointClick} onMouseLeave={ () => setSelectedData(null) }
+                <Scatter name="Earthquake" data={memoizedChartData} fill="red" onClick={handleDataPointClick} onMouseEnter={handleDataPointClick} onMouseLeave={ () => setSelectedData(null) }
                     shape={ (props:any) => {
                         const { cx, cy, payload } = props;
                         const isSelected = payload.id === selectedData;
