@@ -8,6 +8,13 @@ export interface EarthquakeData {
     latitude: number;
     longitude: number;
     depth: number;
+
+    gap:number;
+    horizontalError:string;
+    depthError:string;
+    magError:string;
+    magNst:number;
+    status:string;
 }
 
 interface DataStore {

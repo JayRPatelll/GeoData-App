@@ -19,6 +19,13 @@ const columns = [
     columnHelper.accessor("place", { header: "Location" }),
     columnHelper.accessor("latitude", { header: "Latitude" }),
     columnHelper.accessor("longitude", { header: "Longitude" }),
+
+    columnHelper.accessor("gap", { header: "Gap" }),
+    columnHelper.accessor("horizontalError", { header: "HorizontalError" }),
+    columnHelper.accessor("depthError", { header: "DepthError" }),
+    columnHelper.accessor("magError", { header: "MagError" }),
+    columnHelper.accessor("magNst", { header: "MagNst" }),
+    columnHelper.accessor("status", { header: "Status" }),
 ];
 
 function DataPanel({tableData, setSelectedData}: DataPanelProps) {
